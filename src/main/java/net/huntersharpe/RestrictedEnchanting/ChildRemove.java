@@ -77,7 +77,7 @@ public class ChildRemove implements CommandExecutor{
                 "THORNS",
                 "UNBREAKING"
         };
-        if(handler.containsIgnoreCase(enchant, Arrays.asList(enchants))){
+        if(!handler.containsIgnoreCase(enchant, Arrays.asList(enchants))){
             handler.sendInvalid(src);
             return CommandResult.success();
         }else if(plugin.getConfig().getChildrenList().contains(item) ||
