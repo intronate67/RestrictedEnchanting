@@ -29,7 +29,11 @@ import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.item.Enchantments;
+import org.spongepowered.api.text.Text;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 public class ChildSet implements CommandExecutor {
@@ -47,8 +51,34 @@ public class ChildSet implements CommandExecutor {
         String item = args.<String>getOne("item").get();
         String enchant = args.<String>getOne("enchant").get();
         int level = args.<Integer>getOne("value").get();
-        List<String> enchants = Keys.ITEM_ENCHANTMENTS.getQuery().getParts();
-        if(!enchants.contains(enchant)){
+        String[] enchants = {
+                "AQUA_AFFINITY",
+                "BANE_OF_ARTHROPODS",
+                "BLAST_PROTECTION",
+                "DEPTH_STRIDER",
+                "EFFICIENCY",
+                "FEATHER_FALLING",
+                "FIRE_ASPECT",
+                "FIRE_PROTECTION",
+                "FLAME",
+                "FORTUNE",
+                "INFINITY",
+                "KNOCKBACK",
+                "LOOTING",
+                "LUCK_OF_THE_SEA",
+                "LURE",
+                "POWER",
+                "PROJECTILE_PROTECTION",
+                "PROTECTION",
+                "PUNCH",
+                "RESPIRATION",
+                "SHARPNESS",
+                "SILK_TOUCH",
+                "SMITE",
+                "THORNS",
+                "UNBREAKING"
+        };
+        if(!handler.containsIgnoreCase(enchant, Arrays.asList(enchants))){
             handler.sendInvalid(src);
             return CommandResult.success();
         }else if(level >= 10){
@@ -59,8 +89,14 @@ public class ChildSet implements CommandExecutor {
             handler.sendExists(src);
             return CommandResult.success();
         }
-        plugin.getConfig().getNode(item, enchant, "level").setValue(level);
-        handler.sendSuccess(src);
+        plugin.getConfig().getNode(item, enchant.toUpperCase(), "level").setValue(level);
+        //handler.saveConfig();
+        try{
+            plugin.getLoader().save(plugin.getConfig());
+            handler.sendSuccess(src);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
         return CommandResult.success();
     }
 }

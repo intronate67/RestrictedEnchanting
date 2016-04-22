@@ -56,6 +56,7 @@ public class EnchantmentListener {
         for(int i = 0; i < exceeds.size(); i++){
             item.get(EnchantmentData.class).get().enchantments().remove(exceeds.get(i));
             handler.sendRestrictionMessage(player);
+            e.setCancelled(true);
         }
     }
 

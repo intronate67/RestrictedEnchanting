@@ -29,6 +29,7 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import java.io.IOException;
 import java.util.List;
 
 public class RestrictionHandler {
@@ -44,6 +45,7 @@ public class RestrictionHandler {
     }
 
     public void sendInfo(CommandSource src){
+        //TODO: Add version info.
         src.sendMessage(Text.of(TextColors.GRAY,
                 "----------[",
                 TextColors.BLUE,
@@ -98,6 +100,15 @@ public class RestrictionHandler {
             }
         }
         return exceeding;
+    }
+
+    public boolean containsIgnoreCase(String value, List<String> values){
+        for(String string : values){
+            if(string.equalsIgnoreCase(value)){
+                return true;
+            }
+        }
+        return false;
     }
 
 }

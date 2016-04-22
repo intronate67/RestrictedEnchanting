@@ -32,6 +32,8 @@ import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 public class ChildRemove implements CommandExecutor{
@@ -48,17 +50,48 @@ public class ChildRemove implements CommandExecutor{
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         String item = args.<String>getOne("item").get();
         String enchant = args.<String>getOne("enchant").get();
-        List<String> enchants = Keys.ITEM_ENCHANTMENTS.getQuery().getParts();
-        if(!enchants.contains(enchant)){
+        String[] enchants = {
+                "AQUA_AFFINITY",
+                "BANE_OF_ARTHROPODS",
+                "BLAST_PROTECTION",
+                "DEPTH_STRIDER",
+                "EFFICIENCY",
+                "FEATHER_FALLING",
+                "FIRE_ASPECT",
+                "FIRE_PROTECTION",
+                "FLAME",
+                "FORTUNE",
+                "INFINITY",
+                "KNOCKBACK",
+                "LOOTING",
+                "LUCK_OF_THE_SEA",
+                "LURE",
+                "POWER",
+                "PROJECTILE_PROTECTION",
+                "PROTECTION",
+                "PUNCH",
+                "RESPIRATION",
+                "SHARPNESS",
+                "SILK_TOUCH",
+                "SMITE",
+                "THORNS",
+                "UNBREAKING"
+        };
+        if(handler.containsIgnoreCase(enchant, Arrays.asList(enchants))){
             handler.sendInvalid(src);
             return CommandResult.success();
         }else if(plugin.getConfig().getChildrenList().contains(item) ||
-                plugin.getConfig().getNode("restrictions", item).getChildrenList().contains(enchant)){
+                plugin.getConfig().getNode(item).getChildrenList().contains(enchant)){
             src.sendMessage(Text.of(TextColors.RED, "Item and/or enchant for that item does not exist in config."));
             return CommandResult.success();
         }
-        plugin.getConfig().getNode(item).removeChild(enchant);
-        handler.sendRemoval(src);
+        plugin.getConfig().getNode(item).removeChild(enchant.toUpperCase());
+        try{
+            plugin.getLoader().save(plugin.getConfig());
+            handler.sendRemoval(src);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
         return CommandResult.success();
     }
 }

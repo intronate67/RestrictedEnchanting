@@ -32,6 +32,7 @@ import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.DefaultConfig;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
+import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 
@@ -43,20 +44,20 @@ public class RestrictedEnchanting {
 
     private RestrictionHandler handler;
 
-    public double version = 1.0;
+    //public double version = 1.0;
 
     @Inject
-    Game game;
-
-    @Inject
-    @DefaultConfig(sharedRoot = true)
-    public File configFile = null;
+    private Game game;
 
     @Inject
     @DefaultConfig(sharedRoot = true)
-    public ConfigurationLoader<CommentedConfigurationNode> loader = null;
+    private File configFile = null;
 
-    public CommentedConfigurationNode config = null;
+    @Inject
+    @DefaultConfig(sharedRoot = true)
+    private ConfigurationLoader<CommentedConfigurationNode> loader;
+
+    private CommentedConfigurationNode config = null;
 
     @Listener
     public void onPreInit(GamePreInitializationEvent e){
@@ -76,7 +77,16 @@ public class RestrictedEnchanting {
         handler = new RestrictionHandler(this);
     }
 
-    CommandSpec set = CommandSpec.builder()
+    @Listener
+    public void onGameStop(GameStoppingEvent e){
+        try{
+            loader.save(config);
+        }catch(IOException ex){
+            ex.printStackTrace();
+        }
+    }
+
+    private CommandSpec set = CommandSpec.builder()
             .arguments(GenericArguments.seq(
                     GenericArguments.string(Text.of("item")),
                     GenericArguments.string(Text.of("enchant")),
@@ -84,21 +94,25 @@ public class RestrictedEnchanting {
             ))
             .executor(new ChildSet(this))
             .build();
-    CommandSpec remove = CommandSpec.builder()
+    private CommandSpec remove = CommandSpec.builder()
             .arguments(GenericArguments.seq(
                     GenericArguments.string(Text.of("item")),
                     GenericArguments.string(Text.of("enchant")))
             )
             .executor(new ChildRemove(this))
             .build();
-    CommandSpec restrictions = CommandSpec.builder()
-            .child(set, "remove", "rem")
-            .child(remove, "set", "add")
+    private CommandSpec restrictions = CommandSpec.builder()
+            .child(remove, "remove", "rem")
+            .child(set, "set", "add")
             .executor(new RestrictionParent(this))
             .build();
 
     public CommentedConfigurationNode getConfig(){
         return this.config;
+    }
+
+    public ConfigurationLoader getLoader(){
+        return loader;
     }
 
 }
