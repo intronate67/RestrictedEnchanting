@@ -27,6 +27,7 @@ import com.google.inject.Inject;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 import org.spongepowered.api.Game;
+import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.config.DefaultConfig;
@@ -43,8 +44,6 @@ import java.io.IOException;
 public class RestrictedEnchanting {
 
     private RestrictionHandler handler;
-
-    //public double version = 1.0;
 
     @Inject
     private Game game;
@@ -85,7 +84,6 @@ public class RestrictedEnchanting {
             ex.printStackTrace();
         }
     }
-
     private CommandSpec set = CommandSpec.builder()
             .arguments(GenericArguments.seq(
                     GenericArguments.string(Text.of("item")),
@@ -108,11 +106,15 @@ public class RestrictedEnchanting {
             .build();
 
     public CommentedConfigurationNode getConfig(){
-        return this.config;
+        return config;
     }
 
     public ConfigurationLoader getLoader(){
         return loader;
+    }
+
+    public Game getGame(){
+        return game;
     }
 
 }

@@ -29,10 +29,17 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
-import java.io.IOException;
 import java.util.List;
 
 public class RestrictionHandler {
+
+    private Text prefix = Text.of(TextColors.GRAY,
+            "[",
+            TextColors.BLUE,
+            "Restrictions",
+            TextColors.GRAY,
+            "] "
+    );
 
     private RestrictedEnchanting plugin;
 
@@ -41,7 +48,7 @@ public class RestrictionHandler {
     }
 
     public void sendRestrictionMessage(Player player){
-        player.sendMessage(Text.of(TextColors.RED, "Enchantmentment not allowed at that level. "));
+        player.sendMessage(Text.of(prefix, TextColors.RED, "Enchantmentment not allowed at that level. "));
     }
 
     public void sendInfo(CommandSource src){
@@ -60,23 +67,23 @@ public class RestrictionHandler {
     }
 
     public void sendSuccess(CommandSource src){
-        src.sendMessage(Text.of(TextColors.GREEN, "Restriction added to config."));
+        src.sendMessage(Text.of(prefix, TextColors.GREEN, "Restriction added to config."));
     }
 
     public void sendInvalid(CommandSource src){
-        src.sendMessage(Text.of(TextColors.RED, "Invalid enchantment name."));
+        src.sendMessage(Text.of(prefix, TextColors.RED, "Invalid enchantment name."));
     }
 
     public void sendInvalidLevel(CommandSource src){
-        src.sendMessage(Text.of(TextColors.RED, "Level is too high."));
+        src.sendMessage(Text.of(prefix, TextColors.RED, "Level is too high."));
     }
 
     public void sendExists(CommandSource src){
-        src.sendMessage(Text.of(TextColors.RED, "Restriction already exists in the config for this level."));
+        src.sendMessage(Text.of(prefix, TextColors.RED, "Restriction already exists in the config for this level."));
     }
 
     public void sendRemoval(CommandSource src){
-        src.sendMessage(Text.of(TextColors.GREEN, "Successfully removed restriction."));
+        src.sendMessage(Text.of(prefix, TextColors.GREEN, "Successfully removed restriction."));
     }
 
     public List<ItemEnchantment> exists(List<ItemEnchantment> enchants){

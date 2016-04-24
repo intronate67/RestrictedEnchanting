@@ -23,17 +23,6 @@
 */
 package net.huntersharpe.RestrictedEnchanting;
 
-import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.data.manipulator.mutable.item.EnchantmentData;
-import org.spongepowered.api.data.meta.ItemEnchantment;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.data.ChangeDataHolderEvent;
-import org.spongepowered.api.event.filter.cause.First;
-import org.spongepowered.api.item.inventory.ItemStack;
-
-import java.util.List;
-
 public class EnchantmentListener {
 
     private RestrictedEnchanting plugin;
@@ -43,21 +32,5 @@ public class EnchantmentListener {
     }
 
     private RestrictionHandler handler = new RestrictionHandler(plugin);
-    //Probably only listens to changes by players
-    @Listener
-    public void onEnchant(ChangeDataHolderEvent e, @First Player player){
-        if(!e.getTargetHolder().supports(EnchantmentData.class)) return;
-        List<ItemEnchantment> enchants = e.getTargetHolder().get(Keys.ITEM_ENCHANTMENTS).get();
-        ItemStack item = (ItemStack)e.getTargetHolder();
-        if(handler.exists(enchants).size() == 0) return;
-        List<ItemEnchantment> existing = handler.exists(enchants);
-        if(handler.exceedsLevel(existing).size() == 0) return;
-        List<ItemEnchantment> exceeds = handler.exceedsLevel(existing);
-        for(int i = 0; i < exceeds.size(); i++){
-            item.get(EnchantmentData.class).get().enchantments().remove(exceeds.get(i));
-            handler.sendRestrictionMessage(player);
-            e.setCancelled(true);
-        }
-    }
-
+    //TODO: Add enchant listener. Yet to implemented by sponge.
 }

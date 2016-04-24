@@ -28,15 +28,21 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.spec.CommandExecutor;
-import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColors;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 
 public class ChildRemove implements CommandExecutor{
+
+    private Text prefix = Text.of(TextColors.GRAY,
+            "[",
+            TextColors.BLUE,
+            "Restrictions",
+            TextColors.GRAY,
+            "] "
+    );
 
     private RestrictedEnchanting plugin;
 
@@ -50,7 +56,9 @@ public class ChildRemove implements CommandExecutor{
     public CommandResult execute(CommandSource src, CommandContext args) throws CommandException {
         String item = args.<String>getOne("item").get();
         String enchant = args.<String>getOne("enchant").get();
+        //Below includes all because it allows the removal of all restrictions.
         String[] enchants = {
+                "ALL",
                 "AQUA_AFFINITY",
                 "BANE_OF_ARTHROPODS",
                 "BLAST_PROTECTION",
@@ -82,10 +90,20 @@ public class ChildRemove implements CommandExecutor{
             return CommandResult.success();
         }else if(plugin.getConfig().getChildrenList().contains(item) ||
                 plugin.getConfig().getNode(item).getChildrenList().contains(enchant)){
-            src.sendMessage(Text.of(TextColors.RED, "Item and/or enchant for that item does not exist in config."));
+            src.sendMessage(Text.of(prefix, TextColors.RED, "Item and/or enchant for that item does not exist in config."));
+            return CommandResult.success();
+        }else if(enchant.equalsIgnoreCase("all")){
+            plugin.getConfig().getNode(item).getChildrenList().removeAll(plugin.getConfig().getNode(item).getChildrenList());
+            try{
+                plugin.getLoader().save(plugin.getConfig());
+                src.sendMessage(Text.of(TextColors.GREEN, "Removed all restrictions for ", item));
+            }catch (IOException e){
+                e.printStackTrace();
+            }
             return CommandResult.success();
         }
         plugin.getConfig().getNode(item).removeChild(enchant.toUpperCase());
+        plugin.getConfig().removeChild(item);
         try{
             plugin.getLoader().save(plugin.getConfig());
             handler.sendRemoval(src);
